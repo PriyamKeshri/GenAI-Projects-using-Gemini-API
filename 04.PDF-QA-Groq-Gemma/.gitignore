@@ -1,0 +1,14 @@
+# Environment variables / secrets
+.env
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Uploaded / ingested documents
+us_cencus/
