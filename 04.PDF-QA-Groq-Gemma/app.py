@@ -1,5 +1,4 @@
 import os
-import time
 import streamlit as st
 from langchain_groq import ChatGroq
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -38,12 +37,12 @@ PDF_DIR = "./us_cencus"
 
 def vector_embeddings():
     if "vectors" not in st.session_state:
-        st.session_state.embeddings = GoogleGenerativeAIEmbeddings(model = "models/gemini-embedding-001")
-        st.session_state.loader = PyPDFDirectoryLoader(PDF_DIR) #Data Ingestion
-        st.session_state.docs = st.session_state.loader.load() ##loading document
-        st.session_state.text_splitter = RecursiveCharacterTextSplitter(chunk_size = 1000, chunk_overlap = 200)
-        st.session_state.final_documents = st.session_state.text_splitter.split_documents(st.session_state.docs)
-        st.session_state.vectors = FAISS.from_documents(st.session_state.final_documents, st.session_state.embeddings)
+        embeddings = GoogleGenerativeAIEmbeddings(model = "models/gemini-embedding-001")
+        loader = PyPDFDirectoryLoader(PDF_DIR) #Data Ingestion
+        docs = loader.load() ##loading document
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size = 1000, chunk_overlap = 200)
+        final_documents = text_splitter.split_documents(docs)
+        st.session_state.vectors = FAISS.from_documents(final_documents, embeddings)
 
 
 st.subheader("Upload PDF documents")
@@ -86,13 +85,12 @@ if prompt1:
 
     retrieval_chain = create_retrieval_chain(retriever, document_chain)
 
-    start = time.process_time()
     response = retrieval_chain.invoke({'input' : prompt1})
     st.write(response['answer'])
 
-    # With a streamlit expander 
+    # With a streamlit expander
     with st.expander("Document Similarity Search"):
         # Find the relevant chunks
-        for i, doc in enumerate(response["context"]):
+        for doc in response["context"]:
             st.write(doc.page_content)
             st.write("--------------------------------")

@@ -1,7 +1,6 @@
 faiss-cpu
 groq
 langchain-groq
-PyPDF2
 streamlit
 python-dotenv
 pypdf
